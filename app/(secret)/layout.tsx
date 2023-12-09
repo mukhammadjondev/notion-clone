@@ -7,19 +7,19 @@ import { redirect } from "next/navigation"
 import { Sidebar } from "./components"
 
 export default function SecretLayout ({children}: ChildProps) {
-  // const {isAuthenticated, isLoading} = useConvexAuth()
+  const {isAuthenticated, isLoading} = useConvexAuth()
 
-  // if(isLoading) {
-  //   return (
-  //     <div className="w-full h-full flex items-center justify-center">
-  //       <Loader size={'lg'} />
-  //     </div>
-  //   )
-  // }
+  if(isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Loader size={'lg'} />
+      </div>
+    )
+  }
 
-  // if(!isAuthenticated) {
-  //   redirect('/')
-  // }
+  if(!isAuthenticated) {
+    redirect('/')
+  }
 
   return (
     <div className="flex w-full">

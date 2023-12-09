@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { ChevronsLeft, MenuIcon } from "lucide-react"
 import React, { ElementRef, useEffect, useRef, useState } from "react"
 import { useMediaQuery } from 'usehooks-ts'
+import { DocumentList } from "./document-list"
 
 export const Sidebar = () => {
   const isMobile = useMediaQuery('(max-width: 700px)')
@@ -84,6 +85,12 @@ export const Sidebar = () => {
       <div className={cn("h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
        isMobile && 'opacity-100')} role="button" onClick={collapse}>
         <ChevronsLeft className="h-6 w-6" />
+      </div>
+
+      <div>User Profile Item</div>
+
+      <div className="mt-4">
+        <DocumentList />
       </div>
 
       <div className="absolute right-0 top-0 w-1 h-full cursor-ew-resize bg-primary/10 opacity-0 group-hover/sidebar:opacity-100 transition" onMouseDown={handleMouseDown} />
