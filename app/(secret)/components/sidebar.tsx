@@ -1,13 +1,21 @@
 'use client'
 
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Progress } from "@/components/ui/progress"
+import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
-import { ChevronsLeft, MenuIcon } from "lucide-react"
+import { useMutation } from "convex/react"
+import { ChevronsLeft, MenuIcon, Plus, Rocket, Search, Settings, Trash } from "lucide-react"
 import React, { ElementRef, useEffect, useRef, useState } from "react"
 import { useMediaQuery } from 'usehooks-ts'
 import { DocumentList } from "./document-list"
+import { Item } from "./item"
+import { TrashBox } from "./trash-box"
+import { UserBox } from "./user-box"
 
 export const Sidebar = () => {
   const isMobile = useMediaQuery('(max-width: 700px)')
+  const createDocument = useMutation(api.document.createDocument)
 
   const sidebarRef = useRef<ElementRef<'div'>>(null)
   const navbarRef = useRef<ElementRef<'div'>>(null)
@@ -79,6 +87,14 @@ export const Sidebar = () => {
     document.removeEventListener('mouseup', handleMouseUp)
   }
 
+  const onCreateDocument = () => {
+    createDocument({
+      title: 'Untitled'
+    })
+  }
+
+  const arr = [1]
+
   return <>
     <div className={cn("group/sidebar h-screen bg-secondary overflow-y-auto relative flex w-60 flex-col z-50",
      isResetting && 'transition-all ease-in duration-300', isMobile && 'w-0')} ref={sidebarRef}>
@@ -87,13 +103,39 @@ export const Sidebar = () => {
         <ChevronsLeft className="h-6 w-6" />
       </div>
 
-      <div>User Profile Item</div>
+      <div>
+        <UserBox />
+        <Item label="Search" icon={Search} />
+        <Item label="Settings" icon={Settings} />
+        <Item label="New document" icon={Plus} onClick={onCreateDocument} />
+      </div>
 
       <div className="mt-4">
         <DocumentList />
+        <Item label="Add a page" icon={Plus} onClick={onCreateDocument} />
+        <Popover>
+          <PopoverTrigger className="w-full mt-4">
+            <Item label="Trash" icon={Trash} />
+          </PopoverTrigger>
+          <PopoverContent className="p-0 w-72" side={isMobile ? 'bottom' : 'right'}>
+            <TrashBox />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="absolute right-0 top-0 w-1 h-full cursor-ew-resize bg-primary/10 opacity-0 group-hover/sidebar:opacity-100 transition" onMouseDown={handleMouseDown} />
+
+      <div className="absolute bottom-0 px-2 bg-white/50 dark:bg-black/50 py-4 w-full">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-1 text-[13px]">
+            <Rocket />
+            <p className="opacity-70 font-bold">Free plan</p>
+          </div>
+          <p className="opacity-70 text-[13px]">{arr.length}/3</p>
+        </div>
+
+        <Progress value={arr.length >= 3 ? 100 : arr.length * 33.33} className='mt-2' />
+      </div>
     </div>
 
     <div className={cn("absolute z-50 top-0 left-60 w-[calc(100% - 240px)]", isResetting && 'transition-all ease-in duration-300')} ref={navbarRef}>
