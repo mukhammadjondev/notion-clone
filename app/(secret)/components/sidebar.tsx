@@ -6,15 +6,18 @@ import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { useMutation } from "convex/react"
 import { ChevronsLeft, MenuIcon, Plus, Rocket, Search, Settings, Trash } from "lucide-react"
+import { useRouter } from "next/navigation"
 import React, { ElementRef, useEffect, useRef, useState } from "react"
 import { useMediaQuery } from 'usehooks-ts'
 import { DocumentList } from "./document-list"
 import { Item } from "./item"
 import { TrashBox } from "./trash-box"
 import { UserBox } from "./user-box"
+import { toast } from "sonner"
 
 export const Sidebar = () => {
   const isMobile = useMediaQuery('(max-width: 700px)')
+  const router = useRouter()
   const createDocument = useMutation(api.document.createDocument)
 
   const sidebarRef = useRef<ElementRef<'div'>>(null)
@@ -88,8 +91,14 @@ export const Sidebar = () => {
   }
 
   const onCreateDocument = () => {
-    createDocument({
-      title: 'Untitled'
+    const promise = createDocument({
+      title: 'Untitled',
+    }).then(docId => router.push(`/documents/${docId}`))
+
+    toast.promise(promise, {
+      loading: 'Creating a new document...',
+      success: 'Created a new document!',
+      error: 'Failed to create a new document'
     })
   }
 

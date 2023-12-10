@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils"
 import { useUser } from "@clerk/clerk-react"
 import { useMutation } from "convex/react"
 import { ChevronDown, ChevronRight, LucideIcon, MoreHorizontal, Plus, Trash } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 interface ItemProps {
   label: string
@@ -21,7 +23,23 @@ interface ItemProps {
 
 export const Item = ({label, id, level, expanded, active, documentIcon, onExpand, onClick, icon: Icon}: ItemProps) => {
   const { user } = useUser()
+  const router = useRouter()
   const createDocument = useMutation(api.document.createDocument)
+  const archive = useMutation(api.document.archive)
+
+  const onArchive = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    event.stopPropagation()
+
+    if(!id) return
+
+    const promise = archive({id}).then(() => router.push('/documents'))
+
+    toast.promise(promise, {
+      loading: 'Archiving document...',
+      success: 'Archived document!',
+      error: 'Failed to archive document'
+    })
+  }
 
   const onCreateDocument = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation()
@@ -75,7 +93,7 @@ export const Item = ({label, id, level, expanded, active, documentIcon, onExpand
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="w-60" align="start" side="right" forceMount>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onArchive}>
                 <Trash className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
