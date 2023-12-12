@@ -1,5 +1,6 @@
 'use client'
 
+import { SearchCommand } from "@/components/shared/search-command"
 import { Loader } from "@/components/ui/loader"
 import { ChildProps } from "@/types"
 import { useConvexAuth } from "convex/react"
@@ -24,7 +25,10 @@ export default function SecretLayout ({children}: ChildProps) {
   return (
     <div className="flex w-full">
       <Sidebar />
-      <main className="flex-1 h-full overflow-y-auto">{children}</main>
+      <main className="flex-1 h-full overflow-y-auto">
+        <SearchCommand />
+        {children}
+      </main>
     </div>
   )
 }

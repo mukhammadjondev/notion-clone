@@ -1,4 +1,5 @@
 import { ConvexClientProvider } from '@/components/providers/convex-provider'
+import ModalProvider from '@/components/providers/modal-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
@@ -23,6 +24,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange storageKey='notion-theme'>
             {children}
+            <ModalProvider />
             <Toaster position='bottom-center' />
           </ThemeProvider>
         </ConvexClientProvider>
