@@ -17,6 +17,7 @@ export const TrashBox = () => {
 
   const documents = useQuery(api.document.getTrashDocuments)
   const remove = useMutation(api.document.remove)
+  const restore = useMutation(api.document.restore)
 
   if(documents === undefined) {
     return (
@@ -44,6 +45,16 @@ export const TrashBox = () => {
     }
   }
 
+  const onRestore = (documentId: Id<'documents'>) => {
+    const promise = restore({id: documentId})
+
+    toast.promise(promise, {
+      loading: 'Restoring document...',
+      success: 'Restored document!',
+      error: 'Failed to restore document'
+    })
+  }
+
   return (
     <div className="text-sm">
       <div className="flex items-center gap-x-1 p-2">
@@ -61,7 +72,7 @@ export const TrashBox = () => {
             <span className="truncate pl-2">{document.title}</span>
 
             <div className="flex items-center">
-              <div className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600" role='button'>
+              <div className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600" role='button' onClick={() => onRestore(document._id)}>
                 <Undo className="h-4 w-4 text-muted-foreground" />
               </div>
               <ConfirmModal onConfirm={() => onRemove(document._id)}>

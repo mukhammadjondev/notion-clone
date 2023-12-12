@@ -6,7 +6,7 @@ import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
 import { useMutation } from "convex/react"
 import { ChevronsLeft, MenuIcon, Plus, Rocket, Search, Settings, Trash } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import React, { ElementRef, useEffect, useRef, useState } from "react"
 import { useMediaQuery } from 'usehooks-ts'
 import { DocumentList } from "./document-list"
@@ -14,10 +14,12 @@ import { Item } from "./item"
 import { TrashBox } from "./trash-box"
 import { UserBox } from "./user-box"
 import { toast } from "sonner"
+import { Navbar } from "./navbar"
 
 export const Sidebar = () => {
   const isMobile = useMediaQuery('(max-width: 700px)')
   const router = useRouter()
+  const params = useParams()
   const createDocument = useMutation(api.document.createDocument)
 
   const sidebarRef = useRef<ElementRef<'div'>>(null)
@@ -148,11 +150,15 @@ export const Sidebar = () => {
     </div>
 
     <div className={cn("absolute z-50 top-0 left-60 w-[calc(100% - 240px)]", isResetting && 'transition-all ease-in duration-300')} ref={navbarRef}>
-      <nav className="bg-transparent px-3 py-2 w-full">
-        {isCollapsed && (
-          <MenuIcon className="h-6 w-6 text-muted-foreground" role='button' onClick={reset} />
-        )}
-      </nav>
+      {!!params.documentId ? (
+        <Navbar isCollapsed={isCollapsed} reset={reset} />
+      ) : (
+        <nav className="bg-transparent px-3 py-2 w-full">
+          {isCollapsed && (
+            <MenuIcon className="h-6 w-6 text-muted-foreground" role='button' onClick={reset} />
+          )}
+        </nav>
+      )}
     </div>
   </>
 }

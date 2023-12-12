@@ -10,7 +10,7 @@ interface DocumentPageProps {
 
 const DocumentPage = ({params}: DocumentPageProps) => {
   return (
-    <div>{params.documentId}</div>
+    <div className="mt-28">{params.documentId}</div>
   )
 }
 
