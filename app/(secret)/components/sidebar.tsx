@@ -39,6 +39,8 @@ export const Sidebar = () => {
     } else {
       reset()
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile])
 
   const collapse = () => {
@@ -111,7 +113,7 @@ export const Sidebar = () => {
   const arr = [1]
 
   return <>
-    <div className={cn("group/sidebar h-screen bg-secondary overflow-y-auto relative flex w-60 flex-col z-50",
+    <div className={cn("group/sidebar h-screen bg-secondary overflow-y-auto flex w-60 flex-col z-50 sticky left-0 top-0",
      isResetting && 'transition-all ease-in duration-300', isMobile && 'w-0')} ref={sidebarRef}>
       <div className={cn("h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
        isMobile && 'opacity-100')} role="button" onClick={collapse}>
@@ -121,7 +123,7 @@ export const Sidebar = () => {
       <div>
         <UserBox />
         <Item label="Search" icon={Search} isSearch onClick={() => search.onOpen()} />
-        <Item label="Settings" icon={Settings} onClick={() => settings.onOpen()} />
+        <Item label="Settings" icon={Settings} isSettings onClick={() => settings.onOpen()} />
         <Item label="New document" icon={Plus} onClick={onCreateDocument} />
       </div>
 

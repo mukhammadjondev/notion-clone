@@ -1,15 +1,9 @@
 'use client'
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog"
 import { useSettings } from "@/hooks/use-settings"
 import { Settings } from "lucide-react"
+import { useEffect } from "react"
 import { ModeToggle } from "../shared/mode-toggle"
 import { Button } from "../ui/button"
 import { Label } from "../ui/label"
@@ -17,7 +11,19 @@ import { Label } from "../ui/label"
 export const SettingsModal = () => {
   const settings = useSettings()
 
-  const {isOpen, onClose, onOpen} = settings
+  const {isOpen, onClose, onToggle} = settings
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        onToggle()
+      }
+    };
+
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [onToggle])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
