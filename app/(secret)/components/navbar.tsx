@@ -50,6 +50,6 @@ export const Navbar = ({isCollapsed, reset}: NavbarProps) => {
       </div>
     </nav>
 
-    {document.isArchived && <Banner documentId={document._id} />}
+    {document.isArchived && <Banner documentId={document._id} coverImage={document.coverImage} />}
   </>
 }

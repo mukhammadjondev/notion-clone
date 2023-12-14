@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Loader } from "@/components/ui/loader"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import { useEdgeStore } from "@/lib/edgestore"
 import { useMutation, useQuery } from "convex/react"
 import { Search, Trash, Undo } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
@@ -14,6 +15,7 @@ export const TrashBox = () => {
 
   const router = useRouter()
   const params = useParams()
+  const {edgestore} = useEdgeStore()
 
   const documents = useQuery(api.document.getTrashDocuments)
   const remove = useMutation(api.document.remove)
@@ -31,8 +33,12 @@ export const TrashBox = () => {
     return document.title.toLocaleLowerCase().includes(search.toLowerCase())
   })
 
-  const onRemove = (documentId: Id<'documents'>) => {
+  const onRemove = async (documentId: Id<'documents'>, url?: string) => {
     const promise = remove({id: documentId})
+
+    if(url) {
+      await edgestore.publicFiles.delete({url})
+    }
 
     toast.promise(promise, {
       loading: 'Removing document...',
@@ -75,7 +81,7 @@ export const TrashBox = () => {
               <div className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600" role='button' onClick={() => onRestore(document._id)}>
                 <Undo className="h-4 w-4 text-muted-foreground" />
               </div>
-              <ConfirmModal onConfirm={() => onRemove(document._id)}>
+              <ConfirmModal onConfirm={() => onRemove(document._id, document?.coverImage)}>
                 <div className="rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600" role='button'>
                   <Trash className="h-4 w-4 text-muted-foreground" />
                 </div>

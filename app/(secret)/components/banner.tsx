@@ -2,22 +2,29 @@ import { ConfirmModal } from "@/components/modals/confirm-modal"
 import { Button } from "@/components/ui/button"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import { useEdgeStore } from "@/lib/edgestore"
 import { useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 interface BannerProps {
   documentId: Id<'documents'>
+  coverImage?: string
 }
 
-export const Banner = ({documentId}: BannerProps) => {
+export const Banner = ({documentId, coverImage: url}: BannerProps) => {
   const router = useRouter()
 
   const remove = useMutation(api.document.remove)
   const restore = useMutation(api.document.restore)
+  const {edgestore} = useEdgeStore()
 
-  const onRemove = () => {
+  const onRemove = async () => {
     const promise = remove({id: documentId})
+
+    if(url) {
+      await edgestore.publicFiles.delete({url})
+    }
 
     toast.promise(promise, {
       loading: 'Removing document...',
