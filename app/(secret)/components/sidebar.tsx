@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Progress } from "@/components/ui/progress"
 import { api } from "@/convex/_generated/api"
 import { cn } from "@/lib/utils"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { ChevronsLeft, MenuIcon, Plus, Rocket, Search, Settings, Trash } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import React, { ElementRef, useEffect, useRef, useState } from "react"
@@ -17,6 +17,9 @@ import { toast } from "sonner"
 import { Navbar } from "./navbar"
 import { useSearch } from "@/hooks/use-search"
 import { useSettings } from "@/hooks/use-settings"
+import { useUser } from "@clerk/clerk-react"
+import useSubscription from "@/hooks/use-subscription"
+import { Loader } from "@/components/ui/loader"
 
 export const Sidebar = () => {
   const isMobile = useMediaQuery('(max-width: 700px)')
@@ -24,7 +27,10 @@ export const Sidebar = () => {
   const params = useParams()
   const search = useSearch()
   const settings = useSettings()
+  const {user} = useUser()
   const createDocument = useMutation(api.document.createDocument)
+  const {isLoading, plan} = useSubscription(user?.emailAddresses[0].emailAddress!)
+  const documents = useQuery(api.document.getAllDocuments)
 
   const sidebarRef = useRef<ElementRef<'div'>>(null)
   const navbarRef = useRef<ElementRef<'div'>>(null)
@@ -99,6 +105,11 @@ export const Sidebar = () => {
   }
 
   const onCreateDocument = () => {
+    if(documents?.length && documents.length >= 3 && plan === 'Free') {
+      toast.error('You can only create 3 documents in the free plan')
+      return
+    }
+
     const promise = createDocument({
       title: 'Untitled',
     }).then(docId => router.push(`/documents/${docId}`))
@@ -109,8 +120,6 @@ export const Sidebar = () => {
       error: 'Failed to create a new document'
     })
   }
-
-  const arr = [1]
 
   return <>
     <div className={cn("group/sidebar h-screen bg-secondary overflow-y-auto flex w-60 flex-col z-50 sticky left-0 top-0",
@@ -143,15 +152,29 @@ export const Sidebar = () => {
       <div className="absolute right-0 top-0 w-1 h-full cursor-ew-resize bg-primary/10 opacity-0 group-hover/sidebar:opacity-100 transition" onMouseDown={handleMouseDown} />
 
       <div className="absolute bottom-0 px-2 bg-white/50 dark:bg-black/50 py-4 w-full">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1 text-[13px]">
-            <Rocket />
-            <p className="opacity-70 font-bold">Free plan</p>
+        {isLoading ? (
+          <div className="flex justify-center items-center w-full">
+            <Loader />
           </div>
-          <p className="opacity-70 text-[13px]">{arr.length}/3</p>
-        </div>
+        ) : (
+          <>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1 text-[13px]">
+                <Rocket />
+                <p className="opacity-70 font-bold">{plan} plan</p>
+              </div>
+              {plan === "Free" ? (
+                <p className="opacity-70 text-[13px]">{documents?.length}/3</p>
+              ) : (
+                <p className="opacity-70 text-[13px]">{documents?.length} notes</p>
+              )}
+            </div>
 
-        <Progress value={arr.length >= 3 ? 100 : arr.length * 33.33} className='mt-2' />
+            {plan === "Free" && (
+              <Progress value={documents?.length && documents.length >= 3 ? 100 : (documents?.length || 0) * 33.33} className='mt-2' />
+            )}
+          </>
+        )}
       </div>
     </div>
 
