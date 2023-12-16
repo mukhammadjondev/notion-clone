@@ -2,9 +2,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import useSubscription from "@/hooks/use-subscription"
 import { cn } from "@/lib/utils"
 import { useUser } from "@clerk/clerk-react"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { ChevronDown, ChevronRight, LucideIcon, MoreHorizontal, Plus, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -28,6 +29,8 @@ export const Item = ({label, id, level, expanded, active, documentIcon, onExpand
   const router = useRouter()
   const createDocument = useMutation(api.document.createDocument)
   const archive = useMutation(api.document.archive)
+  const {plan} = useSubscription(user?.emailAddresses[0].emailAddress!)
+  const documents = useQuery(api.document.getAllDocuments)
 
   const onArchive = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation()
@@ -45,6 +48,11 @@ export const Item = ({label, id, level, expanded, active, documentIcon, onExpand
 
   const onCreateDocument = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     event.stopPropagation()
+
+    if(documents?.length && documents.length >= 3 && plan === 'Free') {
+      toast.error('You can only create 3 documents in the free plan')
+      return
+    }
 
     if(!id) return
     createDocument({

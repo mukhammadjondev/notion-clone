@@ -296,7 +296,7 @@ export const getAllDocuments = query({
 
     const documents = await ctx.db
       .query('documents')
-      .withIndex('by_user', q => q.eq('userId', userId))
+      .withIndex('by_user_parent', q => q.eq('userId', userId).eq('parentDocument', undefined))
       .filter(q => q.eq(q.field('isArchived'), false))
       .order('desc')
       .collect()
