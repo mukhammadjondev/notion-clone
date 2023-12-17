@@ -40,7 +40,7 @@ const DocumentPage = () => {
       <Image src={'/note.svg'} alt='Note' width={300} height={300} className='object-cover dark:hidden' />
       <Image src={'/note-dark.svg'} alt='Note' width={300} height={300} className='object-cover hidden dark:block' />
 
-      <h2 className="text-lg font-bold">
+      <h2 className="text-lg text-center font-bold">
         Welcome to {user?.firstName}'s document page!
       </h2>
 

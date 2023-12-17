@@ -147,11 +147,11 @@ export const remove = mutation({
 })
 
 export const getDocumentById = query({
-  args: {id: v.id('documents')},
+  args: {documentId: v.id('documents')},
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
 
-    const document = await ctx.db.get(args.id)
+    const document = await ctx.db.get(args.documentId)
 
     if(!document) {
       throw new Error('Not found')
@@ -252,7 +252,10 @@ export const restore = mutation({
     }
 
     if(existingDocument.parentDocument) {
-      options.parentDocument = undefined
+      const parent = await ctx.db.get(existingDocument.parentDocument)
+      if(parent?.isArchived) {
+        options.parentDocument = undefined
+      }
     }
 
     const document = await ctx.db.patch(args.id, options)

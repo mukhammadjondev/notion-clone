@@ -58,9 +58,10 @@ export const Item = ({label, id, level, expanded, active, documentIcon, onExpand
     createDocument({
       title: 'Untitled',
       parentDocument: id,
-    }).then(() => {
+    }).then((documentId) => {
       if(!expanded) {
         onExpand?.()
+        router.push(`/documents/${documentId}`)
       }
     })
   }

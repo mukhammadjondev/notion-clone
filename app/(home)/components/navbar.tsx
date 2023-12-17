@@ -17,8 +17,8 @@ export const Navbar = () => {
   return (
     <div className={cn("z-50 bg-background fixed top-0 flex items-center w-full px-6 py-3 justify-between",
     scrolled && "border-b shadow-sm")}>
-      <Logo />
-      <div className="flex items-center gap-x-2">
+      <Logo isAuthenticated={isAuthenticated} />
+      <div className={cn("sm:ml-auto sm:justify-end flex items-center justify-between w-full gap-x-2", isAuthenticated && "justify-end")}>
         {isLoading && <Loader />}
 
         {!isAuthenticated && !isLoading && (

@@ -17,7 +17,7 @@ export const Navbar = ({isCollapsed, reset}: NavbarProps) => {
   const params = useParams()
 
   const document = useQuery(api.document.getDocumentById, {
-    id: params.documentId as Id<'documents'>
+    documentId: params.documentId as Id<'documents'>
   })
 
   if(document === undefined) {
