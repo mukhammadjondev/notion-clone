@@ -17,7 +17,7 @@ interface DocumentIdPageProps {
 
 const Page = ({params}: DocumentIdPageProps) => {
   const document = useQuery(api.document.getDocumentById, {
-    id: params.documentId as Id<'documents'>
+    documentId: params.documentId[0] as Id<'documents'>
   })
 
   const Editor = useMemo(() => dynamic(() => import("@/components/shared/editor"), {ssr: false}), [])
